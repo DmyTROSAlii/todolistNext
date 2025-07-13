@@ -26,9 +26,9 @@ const TodosLayout = ({ children }: TodosLayoutProps) => {
   }, [user, router]);
 
   const handleLogout = () => {
+    router.push('/sign-in');
     signOut(auth);
     sessionStorage.removeItem('user');
-    router.push('/sign-in');
   }
 
   return (

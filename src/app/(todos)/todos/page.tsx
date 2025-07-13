@@ -8,10 +8,11 @@ import { TodoListCard } from '@/components/list/list-card';
 import { EditListForm } from '@/components/list/edit-list-form';
 import { CreateListForm } from '@/components/list/create-list-form';
 
-import { db } from '@/firabase/config';
-import { collection, onSnapshot } from '@firebase/firestore';
+import { auth } from '@/firabase/config';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { List } from '@/lib/types';
+import fetchUserLists from '@/lib/fetchUserLists';
 
 export default function TodoHome() {
   const [lists, setLists] = useState<List[]>([]);
@@ -19,19 +20,18 @@ export default function TodoHome() {
   const [modalCreate, setModalCreate] = useState(false);
   const [editList, setEditList] = useState<List | null>(null);
 
-  useEffect(() => {
-  const unsubscribe = onSnapshot(collection(db, 'lists'), (snapshot) => {
-    const data = snapshot.docs.map(doc => ({
-      id: doc.id,
-      name: doc.data().name
-    }));
-    setLists(data);
-  })
+  const [user, loading, error] = useAuthState(auth);
 
-  return () => unsubscribe();
-  }, []);
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = fetchUserLists(user.uid, setLists);
+
+    return () => unsubscribe();
+  }, [user]);
 
   const handleEdit = (id: string) => {
+
     const listToEdit = lists.find(list => list.id === id);
     if (listToEdit) {
       setEditList(listToEdit);
@@ -39,10 +39,14 @@ export default function TodoHome() {
     }
   };
 
+  if(!user) return null;
+
+  console.log(lists)
+
   return (
     <main className="h-full bg-gray-100 p-6">
       <Modal visible={modalCreate} setVisible={setModalCreate}>
-        <CreateListForm close={setModalCreate} />
+        <CreateListForm userId={user.uid} close={setModalCreate} />
       </Modal>
       <Modal visible={modalEdit} setVisible={setModalEdit}>
         <EditListForm list={editList} close={setModalEdit} />

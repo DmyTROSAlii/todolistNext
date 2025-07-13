@@ -7,18 +7,24 @@ import { addDoc, collection } from "@firebase/firestore";
 import { db } from "@/firabase/config";
 
 interface CreateListFormProps {
+  userId: string;
   close: (visible: boolean) => void;
 }
 
-export const CreateListForm = ({ close }: CreateListFormProps) => {
+export const CreateListForm = ({ userId, close }: CreateListFormProps) => {
   const [value, setValue] = useState("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const docRef = await addDoc(collection(db, "lists"), {
+      const res = await addDoc(collection(db, "lists"), {
         name: value,
+      });
+      await addDoc(collection(db, "members"), {
+        listId: res.id,
+        userId: userId,
+        role: "admin",
       });
       setValue("");
     } catch (error) {
