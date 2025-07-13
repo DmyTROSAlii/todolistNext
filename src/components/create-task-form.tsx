@@ -10,26 +10,27 @@ import { db } from "@/app/firabase/config";
 import { Task } from "@/app/types";
 
 interface CreateTaskFormProps {
+  listId: string | null;
   close: (visible: boolean) => void;
 }
 
-export const CreateTaskForm = ({ close }: CreateTaskFormProps) => {
-  const [value, setValue] = useState<Task>({});
+export const CreateTaskForm = ({ listId, close }: CreateTaskFormProps) => {
+  if (!listId) return null;
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const docRef = await addDoc(collection(db, "lists"), {
-        id: ,
-        title: string;
-        description: string;
-        userId: string;
-        createdAt: string;
-        completed: boolean;
-        listId: string;
+      const docRef = await addDoc(collection(db, "tasks"), {
+        title: title,
+        description: description,
+        createdAt: new Date().toISOString(),
+        completed: false,
+        listId: listId,
       });
-      setValue("");
     } catch (error) {
       console.error("Error adding document: ", error);
     } finally {
@@ -41,18 +42,26 @@ export const CreateTaskForm = ({ close }: CreateTaskFormProps) => {
     <Card className="w-full h-full border-none shadow-none">
       <CardHeader className="p-3 text-center">
         <CardTitle className="w-full text-xl font-bold">
-          Create a new List
+          Create a new task
         </CardTitle>
       </CardHeader>
       <CardContent className="p-2">
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-y-2">
             <Input
-              id="list-name"
+              id="title"
               type="text"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder="Enter list name"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter task name"
+              className="w-full"
+            />
+            <Input
+              id="title"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter description"
               className="w-full"
             />
           </div>

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+"use client";
 
 interface ModalProps {
   children: React.ReactNode;

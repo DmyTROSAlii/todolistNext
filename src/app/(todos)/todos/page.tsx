@@ -16,7 +16,7 @@ import { List } from '@/app/types';
 export default function TodoHome() {
   const [lists, setLists] = useState<List[]>([]);
   const [modalEdit, setModalEdit] = useState(false);
-  const [modalDelete, setModalDelete] = useState(false);
+  const [modalCreate, setModalCreate] = useState(false);
   const [editList, setEditList] = useState<List | null>(null);
 
   useEffect(() => {
@@ -41,15 +41,15 @@ export default function TodoHome() {
 
   return (
     <main className="h-full bg-gray-100 p-6">
-      <Modal visible={modalDelete} setVisible={setModalDelete}>
-        <CreateListForm close={setModalDelete} />
+      <Modal visible={modalCreate} setVisible={setModalCreate}>
+        <CreateListForm close={setModalCreate} />
       </Modal>
       <Modal visible={modalEdit} setVisible={setModalEdit}>
         <EditListForm list={editList} close={setModalEdit} />
       </Modal>
       <div className="flex">
         <h1 className="text-3xl font-bold mb-6">Lists</h1>
-        <Button onClick={() => setModalDelete(true)} className="mb-4 ml-auto">
+        <Button onClick={() => setModalCreate(true)} className="mb-4 ml-auto">
           Create New List
         </Button>
       </div>

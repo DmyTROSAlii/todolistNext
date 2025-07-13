@@ -1,4 +1,6 @@
-import { useState, FormEvent } from "react";
+"use client";
+
+import { useState, FormEvent, useEffect } from "react";
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -17,9 +19,13 @@ interface CreateListFormProps {
 export const EditListForm = ({ list, close }: CreateListFormProps) => {
   if (!list) return null;
 
-  const [value, setValue] = useState(list.name);
+  const [title, setTitle] = useState(list.name);
 
-  console.log("EditListForm", list.name);
+    useEffect(() => {
+      if (list) {
+        setTitle(list.name);
+      }
+    }, [list]);
 
   const handleEdit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,9 +33,9 @@ export const EditListForm = ({ list, close }: CreateListFormProps) => {
 
     try {
       await updateDoc(docRef, {
-        name: value
+        name: title
       })
-      setValue("");
+      setTitle("");
     } catch (err) {
       console.error('Помилка при оновленні:', err);
     } finally {
@@ -50,8 +56,8 @@ export const EditListForm = ({ list, close }: CreateListFormProps) => {
             <Input
               id="list-name"
               type="text"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter new name"
               className="w-full"
             />

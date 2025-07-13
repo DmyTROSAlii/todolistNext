@@ -46,7 +46,7 @@ export const TodoListCard = ({
   return (
     <Card
       onClick={handleNavigate}
-      className="w-full cursor-pointer transition hover:shadow-md"
+      className="w-full cursor-pointer transition hover:shadow-md group"
     >
       <CardContent className="flex justify-between items-center p-4">
         <span className="text-lg font-semibold">{name}</span>
@@ -54,6 +54,7 @@ export const TodoListCard = ({
           <Button
             variant="ghost"
             size="icon"
+            className="p-0 invisible group-hover:visible text-zinc-400 hover:text-amber-400"
             onClick={handleEdit}
           >
             <Pencil className="w-4 h-4" />
@@ -61,9 +62,10 @@ export const TodoListCard = ({
           <Button
             variant="ghost"
             size="icon"
+            className="p-0 invisible group-hover:visible text-zinc-400 hover:text-red-600"
             onClick={handleDelete}
           >
-            <Trash className="w-4 h-4 text-red-500" />
+            <Trash className="size-4" />
           </Button>
         </div>
       </CardContent>
