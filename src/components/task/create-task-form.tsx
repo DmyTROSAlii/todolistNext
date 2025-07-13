@@ -1,13 +1,13 @@
 import { useState, FormEvent } from "react";
 
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 import { addDoc, collection } from "@firebase/firestore";
-import { db } from "@/app/firabase/config";
+import { db } from "@/firabase/config";
 
-import { Task } from "@/app/types";
+import { Task } from "@/lib/types";
 
 interface CreateTaskFormProps {
   listId: string | null;

@@ -7,7 +7,7 @@ import { Pencil, Trash } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
-import { db } from '@/app/firabase/config'
+import { db } from '@/firabase/config'
 import { deleteDoc, doc } from '@firebase/firestore'
 
 type TodoListCardProps = {

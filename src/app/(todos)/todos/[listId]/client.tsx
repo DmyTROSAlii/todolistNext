@@ -14,15 +14,16 @@ import { collection, onSnapshot, query, where } from '@firebase/firestore';
 import { Task } from '@/lib/types';
 import { EditTaskForm } from '@/components/task/edit-task-form';
 
-export default function TodoListPage() {
+interface TodoListClientProps {
+  listId: string;
+}
+
+export default function TodoListClient({ listId }: TodoListClientProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalCreate, setModalCreate] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
-
-  const params = useParams();
-  const listId = params.listId as string;
 
   useEffect(() => {
     if (!listId) return;

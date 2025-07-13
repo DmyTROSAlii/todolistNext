@@ -2,14 +2,14 @@
 
 import { useState, FormEvent, useEffect } from "react";
 
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
-import { db } from "@/app/firabase/config";
+import { db } from "@/firabase/config";
 import { addDoc, collection, doc, updateDoc } from "@firebase/firestore";
 
-import { List } from "@/app/types";
+import { List } from "@/lib/types";
 
 interface CreateListFormProps {
   list: List | null;

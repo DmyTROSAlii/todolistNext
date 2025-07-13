@@ -2,14 +2,14 @@
 
 import { useState, FormEvent, useEffect } from "react";
 
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
-import { db } from "@/app/firabase/config";
+import { db } from "@/firabase/config";
 import { doc, updateDoc } from "@firebase/firestore";
 
-import { Task } from "@/app/types";
+import { Task } from "@/lib/types";
 
 interface CreateTaskFormProps {
   task: Task | null;
@@ -34,8 +34,8 @@ export const EditTaskForm = ({ task, close }: CreateTaskFormProps) => {
   const handleEdit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!title.trim() || !description.trim()) {
-      setError("Усі поля обов’язкові для заповнення.");
+    if (!title.trim()) {
+      setError("Title Is Required.");
       return;
     }
 

@@ -1,13 +1,13 @@
 import { CheckCircle, Circle, Pencil, Trash } from "lucide-react";
 
-import { Card, CardContent, CardHeader } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader } from "../ui/card";
+import { Button } from "../ui/button";
 
-import { db } from "@/app/firabase/config";
+import { db } from "@/firabase/config";
 import { deleteDoc, doc, updateDoc } from "@firebase/firestore";
 
 import { cn } from "@/lib/utils";
-import { Task } from "@/app/types";
+import { Task } from "@/lib/types";
 
 interface TaskCardProps {
   task: Task;

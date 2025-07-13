@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { signOut } from 'firebase/auth';
-import { auth } from '@/app/firabase/config';
+import { auth } from '@/firabase/config';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { Button } from '@/components/ui/button';

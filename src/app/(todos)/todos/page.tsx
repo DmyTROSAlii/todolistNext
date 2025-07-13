@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 
 import Modal from '@/components/modal';
 import { Button } from '@/components/ui/button';
-import { TodoListCard } from '@/components/list-card';
-import { EditListForm } from '@/components/edit-list-form';
-import { CreateListForm } from '@/components/create-list-form';
+import { TodoListCard } from '@/components/list/list-card';
+import { EditListForm } from '@/components/list/edit-list-form';
+import { CreateListForm } from '@/components/list/create-list-form';
 
-import { db } from '@/app/firabase/config';
+import { db } from '@/firabase/config';
 import { collection, onSnapshot } from '@firebase/firestore';
 
-import { List } from '@/app/types';
+import { List } from '@/lib/types';
 
 export default function TodoHome() {
   const [lists, setLists] = useState<List[]>([]);

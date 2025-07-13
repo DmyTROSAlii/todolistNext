@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth } from './firabase/config';
+import { auth } from '../firabase/config';
 
 export default function Home() {
   const [user] = useAuthState(auth);
