@@ -17,6 +17,7 @@ import { collection, onSnapshot, query, where } from '@firebase/firestore';
 
 import { Task } from '@/lib/types';
 import getListNameById from '@/lib/getListNameById';
+import { TeamManager } from '@/components/members/team-manager';
 
 export default function TodoListPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -25,6 +26,7 @@ export default function TodoListPage() {
   const [modalCreate, setModalCreate] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [listName, setListName] = useState<string>("");
+  const [modalTeam, setModalTeam] = useState(false);
 
   const params = useParams();
   const listId = params.listId as string;
@@ -32,6 +34,7 @@ export default function TodoListPage() {
   useEffect(() => {
     if (!listId) return;
 
+    setLoading(true);
     const fetchName = async () => {
       const name = await getListNameById(listId);
       if (name) setListName(name);
@@ -54,6 +57,8 @@ export default function TodoListPage() {
       setTasks(sortedTasks)
     })
 
+    setLoading(false);
+
     return () => unsubscribe()
   }, [listId])
 
@@ -66,6 +71,10 @@ export default function TodoListPage() {
     }
   };
 
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading...</div>;
+  }
+
   return (
     <main className="h-full bg-gray-100 p-6">
       <Modal visible={modalCreate} setVisible={setModalCreate}>
@@ -73,6 +82,9 @@ export default function TodoListPage() {
       </Modal>
       <Modal visible={modalEdit} setVisible={setModalEdit}>
         <EditTaskForm task={editTask} close={setModalEdit} />
+      </Modal>
+      <Modal visible={modalTeam} setVisible={setModalTeam}>
+        <TeamManager listId={listId} />
       </Modal>
       <div className="flex">
         <Link href="/todos">
@@ -84,9 +96,14 @@ export default function TodoListPage() {
         <p className="text-3xl font-bold mb-6">
           {listName}
         </p>
-        <Button onClick={() => setModalCreate(true)} className="mb-4 ml-auto">
-          Create New Task
-        </Button>
+        <div className="flex gap-2 ml-auto">
+          <Button onClick={() => setModalCreate(true)} className="mb-4">
+            Create New Task
+          </Button>
+          <Button onClick={() => setModalTeam(true)} className="mb-4">
+            My Team
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-4">
         {tasks.map((task) => (

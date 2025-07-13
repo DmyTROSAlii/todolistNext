@@ -39,9 +39,11 @@ export default function TodoHome() {
     }
   };
 
-  if(!user) return null;
+  if (!user) return null;
 
-  console.log(lists)
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading...</div>;
+  }
 
   return (
     <main className="h-full bg-gray-100 p-6">

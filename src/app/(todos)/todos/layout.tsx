@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -21,7 +21,7 @@ const TodosLayout = ({ children }: TodosLayoutProps) => {
     const userSession = sessionStorage.getItem('user');
 
     if (!user && !userSession) {
-      router.push('/todos');
+      router.push('/sign-in');
     }
   }, [user, router]);
 

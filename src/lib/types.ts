@@ -11,3 +11,11 @@ export type Task = {
   completed: boolean;
   listId: string;
 };
+
+export type Member = {
+  id: string;
+  userId: string;
+  listId: string;
+  role: "admin" | "member";
+  email: string;
+};
