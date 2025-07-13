@@ -1,18 +1,22 @@
 "use client";
 
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+import { ChevronRightIcon } from 'lucide-react';
 
 import Modal from '@/components/modal';
 import { Button } from '@/components/ui/button';
 import { TaskCard } from '@/components/task/task-card';
+import { EditTaskForm } from '@/components/task/edit-task-form';
 import { CreateTaskForm } from '@/components/task/create-task-form';
 
 import { db } from '@/firabase/config';
 import { collection, onSnapshot, query, where } from '@firebase/firestore';
 
 import { Task } from '@/lib/types';
-import { EditTaskForm } from '@/components/task/edit-task-form';
+import getListNameById from '@/lib/getListNameById';
 
 export default function TodoListPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -20,12 +24,20 @@ export default function TodoListPage() {
   const [modalEdit, setModalEdit] = useState(false);
   const [modalCreate, setModalCreate] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
+  const [listName, setListName] = useState<string>("");
 
   const params = useParams();
   const listId = params.listId as string;
 
   useEffect(() => {
     if (!listId) return;
+
+    const fetchName = async () => {
+      const name = await getListNameById(listId);
+      if (name) setListName(name);
+    };
+
+    fetchName();
 
     const q = query(
       collection(db, 'tasks'),
@@ -63,7 +75,15 @@ export default function TodoListPage() {
         <EditTaskForm task={editTask} close={setModalEdit} />
       </Modal>
       <div className="flex">
-        <h1 className="text-3xl font-bold mb-6">Tasks</h1>
+        <Link href="/todos">
+          <p className="text-3xl font-bold mb-6">
+            Lists
+          </p>
+        </Link>
+        <ChevronRightIcon className="size-8 mt-1 text-muted-foreground" />
+        <p className="text-3xl font-bold mb-6">
+          {listName}
+        </p>
         <Button onClick={() => setModalCreate(true)} className="mb-4 ml-auto">
           Create New Task
         </Button>
