@@ -29,11 +29,11 @@ interface TeamManagerProps {
 }
 
 export const TeamManager = ({ listId }: TeamManagerProps) => {
+  const [user] = useAuthState(auth);
   const [emailInput, setEmailInput] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [user] = useAuthState(auth);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -64,7 +64,10 @@ export const TeamManager = ({ listId }: TeamManagerProps) => {
 
           const userDoc = await getDoc(doc(db, "users", member.userId));
 
-          const email = userDoc.exists() ? userDoc.data().email : "невідомо";
+          console.log("Member user document:", member);
+          console.log("User document:", userDoc.data());
+
+          const email = userDoc.exists() ? userDoc.data().name : "unknown";
 
           return {
             id: docSnap.id,
@@ -110,6 +113,8 @@ export const TeamManager = ({ listId }: TeamManagerProps) => {
         listId,
         role: "member",
       });
+
+      console.log("Member added successfully: " + emailInput + " to list " + listId + " with userId " + userId);
 
       setEmailInput("");
     } catch (err) {

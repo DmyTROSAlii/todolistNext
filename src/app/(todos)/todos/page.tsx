@@ -8,24 +8,40 @@ import { TodoListCard } from '@/components/list/list-card';
 import { EditListForm } from '@/components/list/edit-list-form';
 import { CreateListForm } from '@/components/list/create-list-form';
 
-import { auth } from '@/firabase/config';
+import { auth, db } from '@/firabase/config';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { List } from '@/lib/types';
-import fetchUserLists from '@/lib/fetchUserLists';
+import { collection, doc, getDoc, onSnapshot, query, where } from '@firebase/firestore';
 
 export default function TodoHome() {
+  const [user] = useAuthState(auth);
   const [lists, setLists] = useState<List[]>([]);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalCreate, setModalCreate] = useState(false);
   const [editList, setEditList] = useState<List | null>(null);
 
-  const [user, loading, error] = useAuthState(auth);
-
   useEffect(() => {
     if (!user) return;
 
-    const unsubscribe = fetchUserLists(user.uid, setLists);
+    const membersRef = collection(db, 'members');
+    const membersQuery = query(membersRef, where('userId', '==', user.uid));
+
+    const unsubscribe = onSnapshot(membersQuery, async (snapshot) => {
+      const listIds = snapshot.docs.map(doc => doc.data().listId);
+
+      const fetchedLists: List[] = [];
+
+      for (const listId of listIds) {
+        const listSnap = await getDoc(doc(db, 'lists', listId));
+        if (listSnap.exists()) {
+          const listData = listSnap.data();
+          fetchedLists.push({ id: listId, name: listData.name });
+        }
+      }
+
+      setLists(fetchedLists);
+    });
 
     return () => unsubscribe();
   }, [user]);
@@ -40,10 +56,6 @@ export default function TodoHome() {
   };
 
   if (!user) return null;
-
-  if (loading) {
-    return <div className="text-center text-gray-500">Loading...</div>;
-  }
 
   return (
     <main className="h-full bg-gray-100 p-6">
