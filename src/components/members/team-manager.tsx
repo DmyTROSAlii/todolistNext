@@ -31,7 +31,6 @@ interface TeamManagerProps {
 }
 
 export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
-  const [user, loading] = useAuthState(auth);
   const [emailInput, setEmailInput] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [loadingData, setLoadingData] = useState(false);
@@ -138,7 +137,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <div className="space-y-2">
-        {!(loading || loadingData) ? members.map((member) => (
+        {!(loadingData) ? members.map((member) => (
           <div
             key={member.id}
             className="w-[250px] flex items-center justify-between p-3 rounded bg-gray-100 dark:bg-zinc-800"
