@@ -12,9 +12,10 @@ import { Task } from "@/lib/types";
 interface TaskCardProps {
   task: Task;
   onEdit: (id: string) => void;
+  isAdmin?: boolean;
 }
 
-export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
+export const TaskCard = ({ task, onEdit, isAdmin }: TaskCardProps) => {
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -83,22 +84,26 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
               <Circle className="w-4 h-4" />
             )}
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="p-0 invisible group-hover:visible text-zinc-400 hover:text-amber-400"
-            onClick={handleEdit}
-          >
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="p-0 invisible group-hover:visible text-zinc-400 hover:text-red-600"
-            onClick={handleDelete}
-          >
-            <Trash className="w-4 h-4" />
-          </Button>
+          {isAdmin && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="p-0 invisible group-hover:visible text-zinc-400 hover:text-amber-400"
+                onClick={handleEdit}
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="p-0 invisible group-hover:visible text-zinc-400 hover:text-red-600"
+                onClick={handleDelete}
+              >
+                <Trash className="w-4 h-4" />
+              </Button>
+            </>
+          )}
         </div>
       </CardContent>
 

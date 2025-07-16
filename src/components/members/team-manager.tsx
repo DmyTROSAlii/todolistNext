@@ -108,7 +108,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
 
   const handleDelete = async (id: string) => {
     console.log(id);
-    (isAdmin || user?.uid === id) && await deleteDoc(doc(db, "members", id));
+    isAdmin && await deleteDoc(doc(db, "members", id));
   };
 
   const toggleRole = async (id: string, currentRole: "admin" | "member") => {
@@ -137,7 +137,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
         {members.map((member) => (
           <div
             key={member.id}
-            className="flex items-center justify-between p-3 rounded bg-gray-100 dark:bg-zinc-800"
+            className="w-[250px] flex items-center justify-between p-3 rounded bg-gray-100 dark:bg-zinc-800"
           >
             <div>
               <p className="text-sm font-medium">{member.email}</p>
@@ -145,28 +145,30 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
                 Role: {member.role}
               </p>
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-blue-500 hover:text-blue-700"
-                onClick={() => toggleRole(member.id, member.role)}
-              >
-                {member.role === "admin" ? (
-                  <ShieldCheck className="w-4 h-4" />
-                ) : (
-                  <User className="w-4 h-4" />
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-red-500 hover:text-red-700"
-                onClick={() => handleDelete(member.id)}
-              >
-                <Trash className="w-4 h-4" />
-              </Button>
-            </div>
+            {isAdmin && (
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-blue-500 hover:text-blue-700"
+                  onClick={() => toggleRole(member.id, member.role)}
+                >
+                  {member.role === "admin" ? (
+                    <ShieldCheck className="w-4 h-4" />
+                  ) : (
+                    <User className="w-4 h-4" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() => handleDelete(member.id)}
+                >
+                  <Trash className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
           </div>
         ))}
       </div>

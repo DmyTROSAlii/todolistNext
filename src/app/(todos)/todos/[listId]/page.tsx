@@ -115,9 +115,11 @@ export default function TodoListPage() {
           {listName}
         </p>
         <div className="flex gap-2 ml-auto">
-          <Button onClick={() => setModalCreate(true)} className="mb-4">
-            Create New Task
-          </Button>
+          {isAdmin && (
+            <Button onClick={() => setModalCreate(true)} className="mb-4">
+              Create New Task
+            </Button>
+          )}
           <Button onClick={() => setModalTeam(true)} className="mb-4">
             My Team
           </Button>
@@ -129,6 +131,7 @@ export default function TodoListPage() {
             key={task.id}
             task={task}
             onEdit={handleEdit}
+            isAdmin={isAdmin}
           />
         ))}
       </div>
