@@ -9,13 +9,14 @@ import { useAuthState, useSignInWithEmailAndPassword } from 'react-firebase-hook
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Loader from '@/components/loader/loader';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,16 +36,21 @@ const SignUp = () => {
       }
 
       const res = await signInWithEmailAndPassword(email, password);
-      console.log('Sign In Response:', res);
+
+      if (!res?.user) {
+        setError("Failed to sign in. Please check your email and password.");
+        return;
+      }
+
       setEmail('');
       setPassword('');
-
-      router.push('/');
+      router.push('/todos');
     } catch (e) {
-      setError("Failed to sign in. Please check your credentials.");
       console.error('Sign In Error:', e);
     }
   };
+
+  if (loading) return <Loader />
 
   return (
     <Card className="w-96 bg-blue-500 p-6 rounded-lg shadow-xl">

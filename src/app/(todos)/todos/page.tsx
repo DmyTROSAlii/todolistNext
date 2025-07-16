@@ -13,16 +13,22 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { List } from '@/lib/types';
 import { collection, doc, getDoc, onSnapshot, query, where } from '@firebase/firestore';
+import Loader from '@/components/loader/loader';
 
 export default function TodoHome() {
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
+  const [loadingData, setLoadingData] = useState(true);
   const [lists, setLists] = useState<List[]>([]);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalCreate, setModalCreate] = useState(false);
   const [editList, setEditList] = useState<List | null>(null);
 
+  if (!user) return null;
+
   useEffect(() => {
     if (!user) return;
+
+    setLoadingData(true);
 
     const membersRef = collection(db, 'members');
     const membersQuery = query(membersRef, where('userId', '==', user.uid));
@@ -43,11 +49,12 @@ export default function TodoHome() {
       setLists(fetchedLists);
     });
 
+    setLoadingData(false);
+
     return () => unsubscribe();
   }, [user]);
 
   const handleEdit = (id: string) => {
-
     const listToEdit = lists.find(list => list.id === id);
     if (listToEdit) {
       setEditList(listToEdit);
@@ -55,7 +62,7 @@ export default function TodoHome() {
     }
   };
 
-  if (!user) return null;
+  if (loading || loadingData) return <Loader />
 
   return (
     <main className="h-full bg-gray-100 p-6">

@@ -8,13 +8,14 @@ import { auth } from '@/firabase/config';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { Button } from '@/components/ui/button';
+import Loader from '@/components/loader/loader';
 
 interface TodosLayoutProps {
   children: React.ReactNode;
 };
 
 const TodosLayout = ({ children }: TodosLayoutProps) => {
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,6 +28,8 @@ const TodosLayout = ({ children }: TodosLayoutProps) => {
     router.push('/sign-in');
     signOut(auth);
   }
+
+  if (loading) return <Loader />
 
   return (
     <div className="min-h-screen">

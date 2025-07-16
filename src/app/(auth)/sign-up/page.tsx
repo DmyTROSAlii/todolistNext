@@ -10,6 +10,7 @@ import { useAuthState, useCreateUserWithEmailAndPassword } from 'react-firebase-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Loader from '@/components/loader/loader';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -17,7 +18,8 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
   const router = useRouter();
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -26,11 +28,21 @@ const SignUp = () => {
   }, [user, router]);
 
   const handleSignUp = async () => {
+    setError(null);
+
     try {
+      if (!name || !email || !password) {
+        setError("All fields are required");
+        return;
+      }
+
       const res = await createUserWithEmailAndPassword(email, password);
       const user = res?.user;
 
-      if (!user) return;
+      if (!user) {
+        setError("Failed to sign up. Please try another email.");
+        return;
+      }
 
       await setDoc(doc(db, "users", user.uid), {
         name: name,
@@ -47,10 +59,13 @@ const SignUp = () => {
     }
   };
 
+  if (loading) return <Loader />
+
   return (
-    <Card className="w-96 bg-gray-700 p-6 rounded-lg shadow-xl">
+    <Card className="w-96 bg-blue-500 p-6 rounded-lg shadow-xl">
       <CardHeader>
         <CardTitle className="text-white text-2xl mb-5">Sign Up</CardTitle>
+        {error && <p className="text-red-600 text-sm bg-gray-300 p-2 rounded-lg">{error}</p>}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Input
@@ -58,21 +73,21 @@ const SignUp = () => {
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="bg-gray-400 text-white placeholder-gray-500"
+          className="bg-blue-200 text-gray-800 placeholder-gray-500"
         />
         <Input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-gray-400 text-white placeholder-gray-500"
+          className="bg-blue-200 text-gray-800 placeholder-gray-500"
         />
         <Input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-gray-400 text-white placeholder-gray-500"
+          className="bg-blue-200 text-gray-800 placeholder-gray-500"
         />
         <Button onClick={handleSignUp} className="bg-indigo-700 hover:bg-indigo-600 text-white">
           Sign Up
@@ -81,7 +96,7 @@ const SignUp = () => {
       <p className="text-center mt-4 text-white">
         Already have an account?{' '}
         <Link href="/sign-in">
-          <span className="text-blue-500 cursor-pointer">Sign In</span>
+          <span className="text-blue-950 hover:text-white cursor-pointer">Sign In</span>
         </Link>
       </p>
     </Card>

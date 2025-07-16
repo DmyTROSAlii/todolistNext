@@ -23,6 +23,7 @@ import { auth, db } from "@/firabase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import { Member } from "@/lib/types";
+import Loader from "../loader/loader";
 
 interface TeamManagerProps {
   listId: string;
@@ -30,13 +31,16 @@ interface TeamManagerProps {
 }
 
 export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const [emailInput, setEmailInput] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    setLoadingData(true);
+    setError("");
+
     const q = query(collection(db, "members"), where("listId", "==", listId));
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
@@ -59,6 +63,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
       );
 
       setMembers(memberData);
+      setLoadingData(false);
     });
 
     return () => unsubscribe();
@@ -66,7 +71,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
 
   const handleAdd = async () => {
     setError("");
-    setLoading(true);
+    setLoadingData(true);
 
     try {
       if (isAdmin) {
@@ -102,12 +107,11 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
       setError("Error adding member.");
       console.error(err);
     } finally {
-      setLoading(false);
+      setLoadingData(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    console.log(id);
     isAdmin && await deleteDoc(doc(db, "members", id));
   };
 
@@ -126,7 +130,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
             onChange={(e) => setEmailInput(e.target.value)}
             placeholder="Enter email"
           />
-          <Button onClick={handleAdd} disabled={loading || !emailInput}>
+          <Button onClick={handleAdd} disabled={loadingData || !emailInput}>
             Add
           </Button>
         </div>
@@ -134,7 +138,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <div className="space-y-2">
-        {members.map((member) => (
+        {!(loading || loadingData) ? members.map((member) => (
           <div
             key={member.id}
             className="w-[250px] flex items-center justify-between p-3 rounded bg-gray-100 dark:bg-zinc-800"
@@ -170,7 +174,8 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
               </div>
             )}
           </div>
-        ))}
+        )) : <Loader />
+        }
       </div>
     </div>
   );

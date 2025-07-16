@@ -20,10 +20,11 @@ import getListNameById from '@/lib/getListNameById';
 import { TeamManager } from '@/components/members/team-manager';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import checkAdminRights from '@/lib/checkRights';
+import Loader from '@/components/loader/loader';
 
 export default function TodoListPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalCreate, setModalCreate] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
@@ -34,7 +35,7 @@ export default function TodoListPage() {
   const params = useParams();
   const listId = params.listId as string;
 
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
 
   useEffect(() => {
     if (!user) return;
@@ -50,7 +51,8 @@ export default function TodoListPage() {
   useEffect(() => {
     if (!listId) return;
 
-    setLoading(true);
+    setLoadingData(true);
+
     const fetchName = async () => {
       const name = await getListNameById(listId);
       if (name) setListName(name);
@@ -73,7 +75,7 @@ export default function TodoListPage() {
       setTasks(sortedTasks);
     });
 
-    setLoading(false);
+    setLoadingData(false);
 
     return () => unsubscribe()
   }, [listId])
@@ -82,16 +84,13 @@ export default function TodoListPage() {
     if (isAdmin) {
       const taskToEdit = tasks.find(task => task.id === id);
       if (taskToEdit) {
-        console.log("Editing task:", taskToEdit);
         setEditTask(taskToEdit);
         setModalEdit(true);
       }
     }
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-500">Loading...</div>;
-  }
+  if (loading || loadingData) return <Loader />
 
   return (
     <main className="h-full bg-gray-100 p-6">
@@ -112,7 +111,7 @@ export default function TodoListPage() {
         </Link>
         <ChevronRightIcon className="size-8 mt-1 text-muted-foreground" />
         <p className="text-3xl font-bold mb-6">
-          {listName}
+          {listName || "..."}
         </p>
         <div className="flex gap-2 ml-auto">
           {isAdmin && (
