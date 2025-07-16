@@ -26,33 +26,15 @@ import { Member } from "@/lib/types";
 
 interface TeamManagerProps {
   listId: string;
+  isAdmin: boolean;
 }
 
-export const TeamManager = ({ listId }: TeamManagerProps) => {
+export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
   const [user] = useAuthState(auth);
   const [emailInput, setEmailInput] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const q = query(
-      collection(db, "members"),
-      where("listId", "==", listId),
-      where("userId", "==", user.uid)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const doc = snapshot.docs[0];
-      const role = doc?.data()?.role;
-      setIsAdmin(role === "admin");
-    });
-
-    return () => unsubscribe();
-  }, [user, listId]);
 
   useEffect(() => {
     const q = query(collection(db, "members"), where("listId", "==", listId));
@@ -63,9 +45,6 @@ export const TeamManager = ({ listId }: TeamManagerProps) => {
           const member = docSnap.data();
 
           const userDoc = await getDoc(doc(db, "users", member.userId));
-
-          console.log("Member user document:", member);
-          console.log("User document:", userDoc.data());
 
           const email = userDoc.exists() ? userDoc.data().name : "unknown";
 
@@ -90,35 +69,37 @@ export const TeamManager = ({ listId }: TeamManagerProps) => {
     setLoading(true);
 
     try {
-      const userSnap = await getDocs(
-        query(collection(db, "users"), where("email", "==", emailInput))
-      );
+      if (isAdmin) {
+        const userSnap = await getDocs(
+          query(collection(db, "users"), where("email", "==", emailInput))
+        );
 
-      if (userSnap.empty) {
-        setError("User not found");
-        return;
+        if (userSnap.empty) {
+          setError("User not found");
+          return;
+        }
+
+        const user = userSnap.docs[0];
+        const userId = user.id;
+
+        const existing = members.find((m) => m.userId === userId);
+        if (existing) {
+          setError("User already exists in this list");
+          return;
+        }
+
+        await addDoc(collection(db, "members"), {
+          userId,
+          listId,
+          role: "member",
+        });
+
+        setEmailInput("");
+      } else {
+        throw new Error("You do not have permission to add members");
       }
-
-      const user = userSnap.docs[0];
-      const userId = user.id;
-
-      const existing = members.find((m) => m.userId === userId);
-      if (existing) {
-        setError("User already exists in this list");
-        return;
-      }
-
-      await addDoc(collection(db, "members"), {
-        userId,
-        listId,
-        role: "member",
-      });
-
-      console.log("Member added successfully: " + emailInput + " to list " + listId + " with userId " + userId);
-
-      setEmailInput("");
     } catch (err) {
-      setError("Error adding member");
+      setError("Error adding member.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -126,12 +107,13 @@ export const TeamManager = ({ listId }: TeamManagerProps) => {
   };
 
   const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, "members", id));
+    console.log(id);
+    (isAdmin || user?.uid === id) && await deleteDoc(doc(db, "members", id));
   };
 
   const toggleRole = async (id: string, currentRole: "admin" | "member") => {
     const newRole = currentRole === "admin" ? "member" : "admin";
-    await updateDoc(doc(db, "members", id), { role: newRole });
+    isAdmin && await updateDoc(doc(db, "members", id), { role: newRole });
   };
 
   return (
@@ -160,7 +142,7 @@ export const TeamManager = ({ listId }: TeamManagerProps) => {
             <div>
               <p className="text-sm font-medium">{member.email}</p>
               <p className="text-xs text-muted-foreground">
-                Роль: {member.role}
+                Role: {member.role}
               </p>
             </div>
             <div className="flex gap-2">

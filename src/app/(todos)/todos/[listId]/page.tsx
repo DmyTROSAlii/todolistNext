@@ -12,12 +12,14 @@ import { TaskCard } from '@/components/task/task-card';
 import { EditTaskForm } from '@/components/task/edit-task-form';
 import { CreateTaskForm } from '@/components/task/create-task-form';
 
-import { db } from '@/firabase/config';
+import { auth, db } from '@/firabase/config';
 import { collection, onSnapshot, query, where } from '@firebase/firestore';
 
 import { Task } from '@/lib/types';
 import getListNameById from '@/lib/getListNameById';
 import { TeamManager } from '@/components/members/team-manager';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import checkAdminRights from '@/lib/checkRights';
 
 export default function TodoListPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -27,9 +29,23 @@ export default function TodoListPage() {
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [listName, setListName] = useState<string>("");
   const [modalTeam, setModalTeam] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const params = useParams();
   const listId = params.listId as string;
+
+  const [user] = useAuthState(auth);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkAdmin = async () => {
+      const isAdmin = await checkAdminRights(listId, user.uid);
+      setIsAdmin(isAdmin);
+    };
+
+    checkAdmin();
+  }, [user, listId]);
 
   useEffect(() => {
     if (!listId) return;
@@ -45,17 +61,17 @@ export default function TodoListPage() {
     const q = query(
       collection(db, 'tasks'),
       where('listId', '==', listId)
-    )
+    );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({
         ...(doc.data() as Task),
         id: doc.id,
-      }))
+      }));
 
       const sortedTasks = data.slice().sort((a, b) => a.completed === b.completed ? 0 : a.completed ? 1 : -1);
-      setTasks(sortedTasks)
-    })
+      setTasks(sortedTasks);
+    });
 
     setLoading(false);
 
@@ -63,11 +79,13 @@ export default function TodoListPage() {
   }, [listId])
 
   const handleEdit = (id: string) => {
-    const taskToEdit = tasks.find(task => task.id === id);
-    if (taskToEdit) {
-      console.log("Editing task:", taskToEdit);
-      setEditTask(taskToEdit);
-      setModalEdit(true);
+    if (isAdmin) {
+      const taskToEdit = tasks.find(task => task.id === id);
+      if (taskToEdit) {
+        console.log("Editing task:", taskToEdit);
+        setEditTask(taskToEdit);
+        setModalEdit(true);
+      }
     }
   };
 
@@ -84,7 +102,7 @@ export default function TodoListPage() {
         <EditTaskForm task={editTask} close={setModalEdit} />
       </Modal>
       <Modal visible={modalTeam} setVisible={setModalTeam}>
-        <TeamManager listId={listId} />
+        <TeamManager listId={listId} isAdmin={isAdmin} />
       </Modal>
       <div className="flex">
         <Link href="/todos">
