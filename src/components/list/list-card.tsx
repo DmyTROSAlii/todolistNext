@@ -54,7 +54,7 @@ export const TodoListCard = ({
           <Button
             variant="ghost"
             size="icon"
-            className="p-0 invisible group-hover:visible text-zinc-400 hover:text-amber-400"
+            className="p-0 text-zinc-400 hover:text-amber-400 md:group-hover:visible visible md:invisible"
             onClick={handleEdit}
           >
             <Pencil className="w-4 h-4" />
@@ -62,7 +62,7 @@ export const TodoListCard = ({
           <Button
             variant="ghost"
             size="icon"
-            className="p-0 invisible group-hover:visible text-zinc-400 hover:text-red-600"
+            className="p-0 text-zinc-400 hover:text-red-600 md:group-hover:visible visible md:invisible"
             onClick={handleDelete}
           >
             <Trash className="size-4" />
