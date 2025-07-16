@@ -16,31 +16,41 @@ const SignUp = () => {
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
   const [user] = useAuthState(auth);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const userSession = sessionStorage.getItem('user');
-
-    if (user && userSession) {
+    if (user) {
       router.push('/todos');
     }
+
   }, [user, router]);
 
   const handleSignIn = async () => {
+    setError(null);
+
     try {
+      if (!email || !password) {
+        setError("Email and password are required");
+        return;
+      }
+
       const res = await signInWithEmailAndPassword(email, password);
-      sessionStorage.setItem('user', 'true');
+      console.log('Sign In Response:', res);
       setEmail('');
       setPassword('');
+
       router.push('/');
     } catch (e) {
-      console.error(e);
+      setError("Failed to sign in. Please check your credentials.");
+      console.error('Sign In Error:', e);
     }
   };
 
   return (
-    <Card className="w-96 bg-gray-700 p-6 rounded-lg shadow-xl">
+    <Card className="w-96 bg-blue-500 p-6 rounded-lg shadow-xl">
       <CardHeader>
         <CardTitle className="text-white text-2xl mb-5">Sign In</CardTitle>
+        {error && <p className="text-red-600 text-sm bg-gray-300 p-2 rounded-lg">{error}</p>}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Input
@@ -48,14 +58,14 @@ const SignUp = () => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-gray-400 text-white placeholder-gray-500"
+          className="bg-blue-200 text-gray-800 placeholder-gray-500"
         />
         <Input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-gray-400 text-white placeholder-gray-500"
+          className="bg-blue-200 text-gray-800 placeholder-gray-500"
         />
         <Button onClick={handleSignIn} className="bg-indigo-700 hover:bg-indigo-600 text-white">
           Sign In
@@ -64,7 +74,7 @@ const SignUp = () => {
       <p className="text-center mt-4 text-white">
         Don&apos;t have an account?{' '}
         <Link href="/sign-up">
-          <span className="text-blue-500 cursor-pointer">Sign Up</span>
+          <span className="text-blue-950 hover:text-white cursor-pointer">Sign Up</span>
         </Link>
       </p>
     </Card>

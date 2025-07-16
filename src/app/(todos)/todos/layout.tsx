@@ -18,9 +18,7 @@ const TodosLayout = ({ children }: TodosLayoutProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    const userSession = sessionStorage.getItem('user');
-
-    if (!user && !userSession) {
+    if (!user) {
       router.push('/sign-in');
     }
   }, [user, router]);
@@ -28,7 +26,6 @@ const TodosLayout = ({ children }: TodosLayoutProps) => {
   const handleLogout = () => {
     router.push('/sign-in');
     signOut(auth);
-    sessionStorage.removeItem('user');
   }
 
   return (

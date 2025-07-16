@@ -20,9 +20,7 @@ const SignUp = () => {
   const [user] = useAuthState(auth);
 
   useEffect(() => {
-    const userSession = sessionStorage.getItem('user');
-
-    if (user && userSession) {
+    if (user) {
       router.push('/todos');
     }
   }, [user, router]);
@@ -39,7 +37,6 @@ const SignUp = () => {
         email: email,
       });
 
-      sessionStorage.setItem('user', 'true');
       setName('');
       setEmail('');
       setPassword('');
