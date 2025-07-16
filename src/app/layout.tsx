@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Todo List",
   description: "A simple todo list application using Next.js and Firebase",
+  icons: {
+    icon: "public/icon.png",
+  }
 };
 
 export default function RootLayout({
