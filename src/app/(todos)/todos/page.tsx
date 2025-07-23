@@ -13,7 +13,6 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { List } from '@/lib/types';
 import { collection, doc, getDoc, onSnapshot, query, where } from '@firebase/firestore';
-import Loader from '@/components/loader/loader';
 
 export default function TodoHome() {
   const [user, loading] = useAuthState(auth);
@@ -22,8 +21,6 @@ export default function TodoHome() {
   const [modalEdit, setModalEdit] = useState(false);
   const [modalCreate, setModalCreate] = useState(false);
   const [editList, setEditList] = useState<List | null>(null);
-
-  if (!user) return null;
 
   useEffect(() => {
     if (!user) return;
@@ -62,7 +59,7 @@ export default function TodoHome() {
     }
   };
 
-  if (loading || loadingData) return <Loader />
+  if (!user) return null;
 
   return (
     <main className="h-full bg-gray-100 p-6">

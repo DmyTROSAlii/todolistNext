@@ -23,7 +23,6 @@ import { auth, db } from "@/firabase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import { Member } from "@/lib/types";
-import Loader from "../loader/loader";
 
 interface TeamManagerProps {
   listId: string;
@@ -138,7 +137,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <div className="space-y-2">
-        {!(loading || loadingData) ? members.map((member) => (
+        {members.map((member) => (
           <div
             key={member.id}
             className="w-[250px] flex items-center justify-between p-3 rounded bg-gray-100 dark:bg-zinc-800"
@@ -174,8 +173,7 @@ export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
               </div>
             )}
           </div>
-        )) : <Loader />
-        }
+        ))}
       </div>
     </div>
   );

@@ -20,7 +20,6 @@ import getListNameById from '@/lib/getListNameById';
 import { TeamManager } from '@/components/members/team-manager';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import checkAdminRights from '@/lib/checkRights';
-import Loader from '@/components/loader/loader';
 
 export default function TodoListPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -89,8 +88,6 @@ export default function TodoListPage() {
       }
     }
   };
-
-  if (loading || loadingData) return <Loader />
 
   return (
     <main className="h-full bg-gray-100 p-6">

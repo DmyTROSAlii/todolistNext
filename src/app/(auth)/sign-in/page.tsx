@@ -9,7 +9,6 @@ import { useAuthState, useSignInWithEmailAndPassword } from 'react-firebase-hook
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import Loader from '@/components/loader/loader';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -49,8 +48,6 @@ const SignUp = () => {
       console.error('Sign In Error:', e);
     }
   };
-
-  if (loading) return <Loader />
 
   return (
     <Card className="w-96 bg-blue-500 p-6 rounded-lg shadow-xl">
