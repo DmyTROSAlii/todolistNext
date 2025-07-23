@@ -30,7 +30,6 @@ interface TeamManagerProps {
 }
 
 export const TeamManager = ({ listId, isAdmin }: TeamManagerProps) => {
-  const [user, loading] = useAuthState(auth);
   const [emailInput, setEmailInput] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [loadingData, setLoadingData] = useState(false);
